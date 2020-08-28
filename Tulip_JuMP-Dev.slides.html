@@ -13203,7 +13203,8 @@ a.anchor-link {
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h1 id="Design-and-implementation-of-Tulip.jl">Design and implementation of <a href="https://github.com/ds4dm/Tulip.jl">Tulip.jl</a><a class="anchor-link" href="#Design-and-implementation-of-Tulip.jl">&#182;</a></h1><p><br /></p>
-<p>Mathieu Tanneau</p>
+<p>Mathieu Tanneau <br />
+mathieu.tanneau@polymtl.ca</p>
 <p>JuMP developper call - Aug. 28th, 2020</p>
 <p><br /></p>
 <p>Technical report: <a href="https://arxiv.org/pdf/2006.08814.pdf">https://arxiv.org/pdf/2006.08814.pdf</a> <br />
@@ -13231,7 +13232,7 @@ Material: <a href="https://github.com/mtanneau/jump-dev_2020">https://github.com
 <div class="text_cell_render border-box-sizing rendered_html">
 <h2 id="Overview">Overview<a class="anchor-link" href="#Overview">&#182;</a></h2><p>This talk is about</p>
 <ol>
-<li>The motivation between Tulip</li>
+<li>The motivation behind Tulip</li>
 <li>Design choices to allow specialized linear algebra</li>
 <li>Some lessons learned about internal data structures</li>
 </ol>
@@ -13579,7 +13580,17 @@ $$
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="Using-custom-routines">Using custom routines<a class="anchor-link" href="#Using-custom-routines">&#182;</a></h3><p>The <a href="https://github.com/mtanneau/UnitBlockAngular.jl">UnitBlockAngular</a> package defines</p>
+<h3 id="Using-custom-routines">Using custom routines<a class="anchor-link" href="#Using-custom-routines">&#182;</a></h3><p>A unit block-angular matrix has the form</p>
+$$
+A = 
+\begin{bmatrix}
+B_{0} &amp; B_{1} &amp; B_{2} &amp; \dots &amp; B_{R}\\
+0 &amp; e^{T}\\
+0 &amp; &amp; e^{T}\\
+\vdots &amp;&amp;&amp; \ddots \\
+0 &amp;&amp;&amp;&amp; e^{T}
+\end{bmatrix}
+$$<p>The <a href="https://github.com/mtanneau/UnitBlockAngular.jl">UnitBlockAngular</a> package defines</p>
 <ul>
 <li>Custom data structure <code>UnitBlockAngularMatrix &lt;: AbstractMatrix</code></li>
 <li>Custom linear solver <code>UnitBlockAngularFactor &lt;: AbstractKKTSolver</code></li>
@@ -13588,13 +13599,15 @@ $$
 
 </div>
 </div>
-</div><div class="fragment">
+</div></section><section>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[17]:</div>
+<div class="prompt input_prompt">In&nbsp;[16]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-julia"><pre><span></span><span class="c"># Store A as a unit block-angular matrix with 24 linking constraints,</span>
+<div class=" highlight hl-julia"><pre><span></span><span class="k">using</span> <span class="n">UnitBlockAngular</span>
+
+<span class="c"># Store A as a unit block-angular matrix with 24 linking constraints,</span>
 <span class="c"># 72 linking variables, 6421 columns and 1024 blocks</span>
 <span class="n">tlp</span><span class="o">.</span><span class="n">params</span><span class="o">.</span><span class="n">MatrixOptions</span> <span class="o">=</span> <span class="n">Tulip</span><span class="o">.</span><span class="n">TLA</span><span class="o">.</span><span class="n">MatrixOptions</span><span class="p">(</span>
     <span class="n">UnitBlockAngularMatrix</span><span class="p">,</span>
@@ -13609,7 +13622,7 @@ $$
 </div>
 </div>
 
-</div></div></section><section>
+</div></section><section>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
@@ -13653,7 +13666,8 @@ Solver exited with status Trm_Optimal</code></pre>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Implementation">Implementation<a class="anchor-link" href="#Implementation">&#182;</a></h1><table>
+<h1 id="Implementation">Implementation<a class="anchor-link" href="#Implementation">&#182;</a></h1><p>Tulip's codebase breaks down into</p>
+<table>
 <thead><tr>
 <th style="text-align:left">module</th>
 <th style="text-align:right">#loc</th>
@@ -13686,6 +13700,7 @@ Solver exited with status Trm_Optimal</code></pre>
 </tr>
 </tbody>
 </table>
+<p>(numbers are computed with <code>cloc</code> and include docstrings, but not comments)</p>
 
 </div>
 </div>
@@ -13777,7 +13792,7 @@ Solver exited with status Trm_Optimal</code></pre>
 </div></div></section><section>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[19]:</div>
+<div class="prompt input_prompt">In&nbsp;[18]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span></span><span class="n">m</span><span class="p">,</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">4</span>
@@ -13798,7 +13813,7 @@ Solver exited with status Trm_Optimal</code></pre>
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[19]:</div>
+    <div class="prompt output_prompt">Out[18]:</div>
 
 
 
@@ -13818,7 +13833,7 @@ Solver exited with status Trm_Optimal</code></pre>
 </div>
 <div class="cell border-box-sizing code_cell rendered">
 <div class="input">
-<div class="prompt input_prompt">In&nbsp;[20]:</div>
+<div class="prompt input_prompt">In&nbsp;[19]:</div>
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-julia"><pre><span></span><span class="kt">Matrix</span><span class="p">(</span><span class="n">A</span><span class="p">)</span>
@@ -13834,7 +13849,7 @@ Solver exited with status Trm_Optimal</code></pre>
 
 <div class="output_area">
 
-    <div class="prompt output_prompt">Out[20]:</div>
+    <div class="prompt output_prompt">Out[19]:</div>
 
 
 
@@ -14121,6 +14136,7 @@ $$
 <ul>
 <li>Initial infrastructure using <a href="https://github.com/JuliaSmoothOptimizers/Krylov.jl">Krylov.jl</a>: cf <a href="https://github.com/ds4dm/Tulip.jl/pull/56">#56</a></li>
 <li>Changes to the IPM needed for speed &amp; numerics</li>
+<li>Some research on good preconditioners is also needed.</li>
 </ul>
 
 </div>
@@ -14140,7 +14156,7 @@ $$
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="GPU-support">GPU support<a class="anchor-link" href="#GPU-support">&#182;</a></h2><p>Most likely as part of a specialized linear solver.</p>
+<h2 id="GPU-support">GPU support<a class="anchor-link" href="#GPU-support">&#182;</a></h2><p>Most likely as part of a specialized linear solver, e.g., in combination with a Krylov method.</p>
 
 </div>
 </div>
